@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Voting System</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #EB5B00, #FFB200, #138808);
+            padding: 20px;
+            height: 100vh;
+        }
+        h1 {
+            color: #333;
+        }
+        #voter-section, #vote-section {
+            background: rgba(255, 255, 255, 0.8); /* Adding some transparency */
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+        }
+        input, button {
+            padding: 10px;
+            margin-top: 10px;
+            width: 100%;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <h1>Simple Voting System</h1>
+    
+    <!-- Aadhaar Number Section -->
+    <div id="voter-section">
+        <h2>Enter Aadhaar Number</h2>
+        <input type="text" id="aadhaarInput" placeholder="Enter your Aadhaar Number">
+        <button onclick="checkAadhaar()">Submit Aadhaar</button>
+    </div>
+
+    <!-- Vote Section -->
+    <div id="vote-section" style="display: none;">
+        <h2>Vote for Your Candidate</h2>
+        <button onclick="voteForCandidate('Modi')">Vote for Modi</button>
+        <button onclick="voteForCandidate('Rahul')">Vote for Rahul</button>
+        <button onclick="voteForCandidate('Kejriwal')">Vote for Kejriwal</button>
+    </div>
+
+    <!-- Results Section -->
+    <div id="results-section">
+        <h2>Results</h2>
+        <p>Modi: <span id="votes-Modi">0</span> votes</p>
+        <p>Rahul: <span id="votes-Rahul">0</span> votes</p>
+        <p>Kejriwal: <span id="votes-Kejriwal">0</span> votes</p>
+    </div>
+
+    <script>
+        // Initialize local storage for votes and Aadhaar numbers
+        if (!localStorage.getItem('votes')) {
+            localStorage.setItem('votes', JSON.stringify({ Modi: 0, Rahul: 0, Kejriwal: 0 }));
+        }
+        if (!localStorage.getItem('votedAadhaar')) {
+            localStorage.setItem('votedAadhaar', JSON.stringify([]));
+        }
+
+        // Function to check Aadhaar number
+        function checkAadhaar() {
+            const aadhaarNumber = document.getElementById('aadhaarInput').value;
+            
+            if (aadhaarNumber.length !== 12) {
+                if (aadhaarNumber.length < 12) {
+                    alert('Aadhaar number should be 12 digits long.');
+                } else {
+                    alert('Aadhaar number cannot exceed 12 digits.');
+                }
+                return;
+            }
+
+            const votedAadhaar = JSON.parse(localStorage.getItem('votedAadhaar'));
+            if (votedAadhaar.includes(aadhaarNumber)) {
+                alert('You have already voted.');
+            } else {
+                document.getElementById('voter-section').style.display = 'none';
+                document.getElementById('vote-section').style.display = 'block';
+            }
+        }
+
+        // Function to cast vote
+        function voteForCandidate(candidate) {
+            const votes = JSON.parse(localStorage.getItem('votes'));
+            votes[candidate]++;
+            localStorage.setItem('votes', JSON.stringify(votes));
+
+            const aadhaarNumber = document.getElementById('aadhaarInput').value;
+            const votedAadhaar = JSON.parse(localStorage.getItem('votedAadhaar'));
+            votedAadhaar.push(aadhaarNumber);
+            localStorage.setItem('votedAadhaar', JSON.stringify(votedAadhaar));
+
+            alert('Vote cast successfully!');
+            document.getElementById('vote-section').style.display = 'none';
+            updateResults();
+        }
+
+        // Function to update results
+        function updateResults() {
+            const votes = JSON.parse(localStorage.getItem('votes'));
+            document.getElementById('votes-Modi').textContent = votes.Modi;
+            document.getElementById('votes-Rahul').textContent = votes.Rahul;
+            document.getElementById('votes-Kejriwal').textContent = votes.Kejriwal;
+        }
+
+        // Initial results display
+        updateResults();
+    </script>
+</body>
+</html>
